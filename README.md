@@ -112,6 +112,7 @@ cd D:\personal\ineoui\self_construction\tools\time-checkin
 ```text
 docs/
   agent-workflow.md         如何和 agent 一起分析
+  gpu-driver-roadmap.md     GPU 驱动学习路线
   immediate-actions.md      从浅到深的立即行动
   method.md                 方法说明
 templates/
