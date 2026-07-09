@@ -270,9 +270,14 @@ class CheckInApp:
         frame = ttk.Frame(popup, padding=16)
         frame.pack(fill="both", expand=True)
 
-        ttk.Label(frame, text="用 1 分钟把时间重新拿回来", font=("", 14, "bold")).pack(
+        ttk.Label(frame, text="先坐直，再把时间拿回来", font=("", 14, "bold")).pack(
             anchor="w"
         )
+        ttk.Label(
+            frame,
+            text="坐直，双脚踩地，肩膀放下，慢慢呼气一次。",
+            foreground="#444444",
+        ).pack(anchor="w", pady=(4, 0))
         ttk.Label(frame, text=f"回顾范围：{format_period(self.period_start, ended_at)}").pack(
             anchor="w", pady=(4, 12)
         )

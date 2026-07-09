@@ -41,10 +41,12 @@ tools/time-checkin/logs/
 
 先跑一个 14 天实验，不要试图一次性决定人生方向。
 
-1. 用 `templates/direction-scorecard.md` 给外部方向打分
-2. 只选一个方向进入 14 天实验
-3. 用 `templates/14-day-experiment.md` 定义两周后要拿出的证据
-4. 每天用提醒器把时间从“空想机会”拉回“可见产出”
+1. 状态塌掉时，先看 `templates/reset-card.md`
+2. 用 `docs/immediate-actions.md` 做从浅到深的复位
+3. 用 `templates/direction-scorecard.md` 给外部方向打分
+4. 只选一个方向进入 14 天实验
+5. 用 `templates/14-day-experiment.md` 定义两周后要拿出的证据
+6. 每天用提醒器把时间从“空想机会”拉回“可见产出”
 
 ## 核心原则
 
@@ -83,11 +85,13 @@ cd D:\personal\ineoui\self_construction\tools\time-checkin
 
 ```text
 docs/
+  immediate-actions.md      从浅到深的立即行动
   method.md                 方法说明
 templates/
   14-day-experiment.md      14 天实验模板
   daily-checkin.md          每日复盘模板
   direction-scorecard.md    方向评分模板
+  reset-card.md             状态复位卡片
 tools/
   time-checkin/             定时回顾提醒器
 ```
