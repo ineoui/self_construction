@@ -48,6 +48,32 @@ tools/time-checkin/logs/
 5. 用 `templates/14-day-experiment.md` 定义两周后要拿出的证据
 6. 每天用提醒器把时间从“空想机会”拉回“可见产出”
 
+## 和 agent 一起用
+
+不需要每天手填所有 Markdown。
+
+推荐方式是：
+
+1. 用提醒器自动生成时间日志
+2. 把临时想法丢进 `workspace/inbox.md`
+3. 当前只维护一个 `workspace/current-experiment.md`
+4. 需要分析时运行：
+
+```powershell
+cd D:\personal\ineoui\self_construction
+python .\tools\agent-review\build_context.py --days 7 --clipboard --open
+```
+
+脚本会生成：
+
+```text
+agent-out/agent-context.md
+```
+
+然后把这份内容发给 ChatGPT、Codex 或其他 agent，让它帮你分析最近的循环、机会焦虑、下一步行动和 14 天实验是否要调整。
+
+详细说明见 `docs/agent-workflow.md`。
+
 ## 核心原则
 
 当前工作先降级成现金流项目：
@@ -85,6 +111,7 @@ cd D:\personal\ineoui\self_construction\tools\time-checkin
 
 ```text
 docs/
+  agent-workflow.md         如何和 agent 一起分析
   immediate-actions.md      从浅到深的立即行动
   method.md                 方法说明
 templates/
@@ -93,5 +120,6 @@ templates/
   direction-scorecard.md    方向评分模板
   reset-card.md             状态复位卡片
 tools/
+  agent-review/             生成 agent 分析上下文
   time-checkin/             定时回顾提醒器
 ```
