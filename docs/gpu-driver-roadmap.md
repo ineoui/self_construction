@@ -22,6 +22,7 @@
 
 ```text
 Vulkan / GL API 深化
+> CUDA / GPU 架构临时补强
 > 图形调试与 trace 工具
 > Mesa 用户态驱动
 > Linux DRM / KMS / GPU 内核驱动
@@ -30,6 +31,8 @@ Vulkan / GL API 深化
 ```
 
 不要一开始就把 GPU 虚拟化当主线。它很重要，但更像是在 UMD/KMD、内存管理、IOMMU、设备模型都稍微站稳之后再上的一层。
+
+如果要把以前 Tegra X1 / CUDA 声纳项目经验重新捡起来，可以在第 1 阶段后插入一轮短补强：`docs/cuda-architecture-refresh.md`。
 
 ## 0. 先搭工作台
 
