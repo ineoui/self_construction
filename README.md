@@ -9,6 +9,30 @@
 
 这个仓库的目标不是提供鸡血，而是把状态拆成可执行的小动作。
 
+## 网页版
+
+`web/` 中包含一个可部署到 GitHub Pages 的个人行动工作台，功能包括：
+
+- 60 / 90 / 120 分钟定时回顾和浏览器通知
+- 岗位要求、能力差距、阶段和下一步跟踪
+- TODO、截止日期、预计时间和 P0-P3 优先级
+- 14 天实验管理
+- Inbox 机会收纳
+- 自动生成给 agent 分析的 Markdown 上下文
+- 本地 JSON 数据导入和导出
+
+本地运行：
+
+```powershell
+cd D:\personal\ineoui\self_construction\web
+npm install
+npm run dev
+```
+
+网页数据默认保存在当前浏览器的 `localStorage` 中，不会自动上传到远端。换设备前需要在“Agent 分析”页面导出 JSON，再在另一台设备导入。
+
+GitHub Pages 部署说明见 `web/README.md`。
+
 ## 快速开始
 
 Windows 用户可以直接双击：
@@ -124,4 +148,5 @@ templates/
 tools/
   agent-review/             生成 agent 分析上下文
   time-checkin/             定时回顾提醒器
+web/                        GitHub Pages 网页版
 ```

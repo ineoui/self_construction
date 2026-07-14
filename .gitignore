@@ -9,3 +9,7 @@ tools/time-checkin/config.json
 tools/time-checkin/logs/
 workspace/
 agent-out/
+
+# Web build output
+web/node_modules/
+web/dist/
