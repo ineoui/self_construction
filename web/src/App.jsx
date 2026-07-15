@@ -12,6 +12,8 @@ import {
   Circle,
   ClipboardCopy,
   Clock3,
+  Cloud,
+  CloudOff,
   Download,
   ExternalLink,
   FileJson,
@@ -20,11 +22,14 @@ import {
   Inbox,
   LayoutDashboard,
   Link2,
+  LogOut,
+  Mail,
   Pause,
   Pencil,
   Play,
   Plus,
   RotateCcw,
+  RefreshCw,
   Save,
   Search,
   Target,
@@ -44,6 +49,7 @@ import {
   localDateKey,
   normalizeData,
 } from "./data.js";
+import { useCloudSync } from "./useCloudSync.js";
 
 const NAV_ITEMS = [
   { id: "dashboard", label: "今日总览", icon: LayoutDashboard },
@@ -140,6 +146,121 @@ function Modal({ title, onClose, children, size = "medium" }) {
         <div className="modal-body">{children}</div>
       </section>
     </div>
+  );
+}
+
+function cloudStatusLabel(cloud) {
+  if (!cloud.configured) return "本地模式";
+  if (!cloud.user) return cloud.status === "link_sent" ? "检查邮箱" : "未登录";
+  const labels = {
+    loading: "读取云端",
+    pending: "等待同步",
+    saving: "正在同步",
+    synced: "已同步",
+    offline: "离线缓存",
+    error: "同步异常",
+  };
+  return labels[cloud.status] || "云同步";
+}
+
+function CloudStatusButton({ cloud, onClick }) {
+  const active = Boolean(cloud.user && cloud.status !== "error" && cloud.status !== "offline");
+  const Icon = active ? Cloud : CloudOff;
+  return (
+    <button
+      className={`sync-button status-${cloud.status}`}
+      onClick={onClick}
+      title="云同步设置"
+    >
+      <Icon size={17} />
+      <span>{cloudStatusLabel(cloud)}</span>
+    </button>
+  );
+}
+
+function CloudSyncModal({ cloud, onClose }) {
+  const [email, setEmail] = useState(cloud.user?.email || "");
+  const [submitting, setSubmitting] = useState(false);
+
+  const sendLink = async (event) => {
+    event.preventDefault();
+    if (!email.trim()) return;
+    setSubmitting(true);
+    await cloud.sendMagicLink(email.trim());
+    setSubmitting(false);
+  };
+
+  return (
+    <Modal title="手机与 PC 云同步" onClose={onClose}>
+      {!cloud.configured ? (
+        <div className="cloud-empty">
+          <CloudOff size={28} />
+          <strong>当前部署还没有连接 Supabase</strong>
+          <p>配置 Project URL、Publishable key 和数据库 SQL 后，这里会启用邮箱登录与跨设备同步。</p>
+          <a href="https://github.com/ineoui/self_construction/blob/main/docs/supabase-setup.md" target="_blank" rel="noreferrer">
+            查看配置说明 <ExternalLink size={14} />
+          </a>
+        </div>
+      ) : null}
+
+      {cloud.configured && !cloud.user ? (
+        <form className="modal-form" onSubmit={sendLink}>
+          <div className="sync-intro">
+            <Mail size={22} />
+            <div>
+              <strong>用同一个邮箱登录手机和 PC</strong>
+              <span>Supabase 会发送登录链接，不需要单独设置密码。</span>
+            </div>
+          </div>
+          <Field label="邮箱">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="you@example.com"
+              autoFocus
+            />
+          </Field>
+          {cloud.status === "link_sent" ? (
+            <div className="inline-notice success">登录链接已发送，请在这台设备上打开邮件中的链接。</div>
+          ) : null}
+          {cloud.errorMessage ? <div className="inline-notice error">{cloud.errorMessage}</div> : null}
+          <div className="modal-actions">
+            <button className="button primary" type="submit" disabled={submitting}>
+              <Mail size={17} />
+              {submitting ? "发送中" : "发送登录链接"}
+            </button>
+          </div>
+        </form>
+      ) : null}
+
+      {cloud.user ? (
+        <div className="cloud-account">
+          <div className="cloud-account-header">
+            <span className="cloud-avatar"><Cloud size={21} /></span>
+            <span>
+              <strong>{cloud.user.email}</strong>
+              <small>{cloudStatusLabel(cloud)}</small>
+            </span>
+          </div>
+          <dl className="sync-details">
+            <div><dt>同步方式</dt><dd>本地立即保存，联网后约 1 秒上传</dd></div>
+            <div><dt>最近同步</dt><dd>{cloud.lastSyncedAt ? formatDateTime(cloud.lastSyncedAt) : "尚未完成"}</dd></div>
+            <div><dt>冲突规则</dt><dd>最后一次修改覆盖</dd></div>
+          </dl>
+          {cloud.errorMessage ? <div className="inline-notice error">{cloud.errorMessage}</div> : null}
+          <div className="modal-actions split">
+            <button className="button danger-quiet" onClick={cloud.signOut} type="button">
+              <LogOut size={17} />退出登录
+            </button>
+            <button className="button primary" onClick={cloud.syncNow} type="button">
+              <RefreshCw size={17} />立即同步
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </Modal>
   );
 }
 
@@ -593,7 +714,7 @@ function TasksView({ data, actions }) {
   );
 }
 
-function AgentView({ data, actions }) {
+function AgentView({ data, actions, cloud }) {
   const context = useMemo(() => buildAgentContext(data), [data]);
   const importRef = useRef(null);
 
@@ -630,10 +751,16 @@ function AgentView({ data, actions }) {
         </section>
 
         <section className="tool-surface privacy-panel">
-          <div className="privacy-icon"><FileJson size={22} /></div>
-          <h2>数据只在当前浏览器</h2>
-          <p>网页不会上传你的岗位、TODO 或回顾内容。换设备或清理浏览器前，请先导出 JSON 备份。</p>
+          <div className="privacy-icon">{cloud.user ? <Cloud size={22} /> : <FileJson size={22} />}</div>
+          <h2>{cloud.user ? "本地缓存与云端同步" : "数据保存在当前浏览器"}</h2>
+          <p>{cloud.user
+            ? `已登录 ${cloud.user.email}。数据会保留本地缓存，并同步到你的 Supabase 账户。`
+            : "网页目前使用本地存储。换设备或清理浏览器前，请先导出 JSON 备份。"}</p>
           <div className="button-stack">
+            <button className="button secondary" onClick={actions.openCloudSync}>
+              {cloud.user ? <RefreshCw size={17} /> : <Cloud size={17} />}
+              {cloud.user ? cloudStatusLabel(cloud) : "设置云同步"}
+            </button>
             <button className="button secondary" onClick={actions.exportData}><Download size={17} />导出数据</button>
             <button className="button secondary" onClick={() => importRef.current?.click()}><Upload size={17} />导入数据</button>
             <button className="button danger-quiet" onClick={actions.resetData}><RotateCcw size={17} />清空并重置</button>
@@ -759,7 +886,10 @@ export default function App() {
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [jobModal, setJobModal] = useState(null);
   const [taskModal, setTaskModal] = useState(null);
+  const [cloudOpen, setCloudOpen] = useState(false);
   const [toast, setToast] = useState("");
+
+  const cloud = useCloudSync({ data, setData, onMessage: setToast });
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -941,6 +1071,7 @@ export default function App() {
     exportData,
     importData,
     resetData,
+    openCloudSync: () => setCloudOpen(true),
   };
 
   const [title, subtitle] = VIEW_TITLES[view];
@@ -973,6 +1104,7 @@ export default function App() {
             <p>{subtitle}</p>
           </div>
           <div className="topbar-actions">
+            <CloudStatusButton cloud={cloud} onClick={() => setCloudOpen(true)} />
             <button className="button secondary desktop-only" onClick={() => setCheckInOpen(true)}><Focus size={17} />立即回顾</button>
             <IconButton label="添加 TODO" onClick={() => setTaskModal({ task: null })}><Plus size={19} /></IconButton>
           </div>
@@ -982,7 +1114,7 @@ export default function App() {
           {view === "dashboard" ? <Dashboard data={data} now={now} actions={actions} /> : null}
           {view === "jobs" ? <JobsView data={data} actions={actions} /> : null}
           {view === "tasks" ? <TasksView data={data} actions={actions} /> : null}
-          {view === "agent" ? <AgentView data={data} actions={actions} /> : null}
+          {view === "agent" ? <AgentView data={data} actions={actions} cloud={cloud} /> : null}
         </div>
       </main>
 
@@ -998,6 +1130,7 @@ export default function App() {
       {checkInOpen ? <CheckInModal onClose={() => setCheckInOpen(false)} onSave={saveCheckIn} onSnooze={snoozeCheckIn} /> : null}
       {jobModal ? <JobModal job={jobModal.job} onClose={() => setJobModal(null)} onSave={saveJob} onDelete={removeJob} /> : null}
       {taskModal ? <TaskModal task={taskModal.task} onClose={() => setTaskModal(null)} onSave={saveTask} /> : null}
+      {cloudOpen ? <CloudSyncModal cloud={cloud} onClose={() => setCloudOpen(false)} /> : null}
       {toast ? <div className="toast"><Check size={17} />{toast}</div> : null}
     </div>
   );

@@ -233,6 +233,52 @@ dd,
   gap: 8px;
 }
 
+.sync-button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  color: #59635d;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sync-button:hover {
+  background: var(--surface-soft);
+}
+
+.sync-button.status-synced {
+  color: var(--accent);
+  border-color: #b9d8d0;
+  background: var(--accent-soft);
+}
+
+.sync-button.status-pending,
+.sync-button.status-saving,
+.sync-button.status-loading {
+  color: var(--blue);
+  border-color: #c8d8e8;
+  background: var(--blue-soft);
+}
+
+.sync-button.status-offline {
+  color: var(--amber);
+  border-color: #e5cfaa;
+  background: var(--amber-soft);
+}
+
+.sync-button.status-error {
+  color: var(--coral);
+  border-color: #e4c2be;
+  background: var(--coral-soft);
+}
+
 .content-area {
   width: min(1240px, 100%);
   margin: 0 auto;
@@ -1031,6 +1077,154 @@ textarea::placeholder {
   line-height: 1.6;
 }
 
+.cloud-empty {
+  display: flex;
+  min-height: 230px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 24px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.cloud-empty > svg {
+  color: #87928b;
+}
+
+.cloud-empty strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.cloud-empty p {
+  max-width: 410px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.cloud-empty a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.sync-intro {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  border-left: 3px solid var(--blue);
+  background: var(--blue-soft);
+}
+
+.sync-intro > svg {
+  color: var(--blue);
+}
+
+.sync-intro > div {
+  display: grid;
+  gap: 3px;
+}
+
+.sync-intro strong {
+  font-size: 12px;
+}
+
+.sync-intro span {
+  color: #526271;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.inline-notice {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.inline-notice.success {
+  color: #315f55;
+  border-color: #bdd9d2;
+  background: var(--accent-soft);
+}
+
+.inline-notice.error {
+  color: #8d3e36;
+  border-color: #e4c2be;
+  background: var(--coral-soft);
+}
+
+.cloud-account {
+  display: grid;
+  gap: 16px;
+}
+
+.cloud-account-header {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 11px;
+}
+
+.cloud-avatar {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 7px;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.cloud-account-header > span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.cloud-account-header strong {
+  font-size: 12px;
+}
+
+.cloud-account-header small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.sync-details {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.sync-details > div {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+}
+
+.sync-details dt {
+  color: var(--muted);
+}
+
+.sync-details dd {
+  margin: 0;
+}
+
 .button-stack {
   display: grid;
   gap: 8px;
@@ -1297,6 +1491,16 @@ textarea::placeholder {
   }
 
   .desktop-only {
+    display: none;
+  }
+
+  .sync-button {
+    width: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .sync-button span {
     display: none;
   }
 

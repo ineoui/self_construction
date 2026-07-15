@@ -13,3 +13,5 @@ agent-out/
 # Web build output
 web/node_modules/
 web/dist/
+web/.env.local
+web/.env.*.local

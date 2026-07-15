@@ -20,6 +20,7 @@
 - Inbox 机会收纳
 - 自动生成给 agent 分析的 Markdown 上下文
 - 本地 JSON 数据导入和导出
+- 可选 Supabase 邮箱登录和手机/PC 实时同步
 
 本地运行：
 
@@ -30,6 +31,8 @@ npm run dev
 ```
 
 网页数据默认保存在当前浏览器的 `localStorage` 中，不会自动上传到远端。换设备前需要在“Agent 分析”页面导出 JSON，再在另一台设备导入。
+
+配置 Supabase 后，网页会继续保留本地缓存，同时将同一账号的数据同步到手机和 PC。配置步骤见 `docs/supabase-setup.md`。
 
 GitHub Pages 部署说明见 `web/README.md`。
 
