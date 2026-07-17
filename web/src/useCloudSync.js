@@ -4,6 +4,24 @@ import { isSupabaseConfigured, supabase } from "./supabase.js";
 
 const INITIAL_STATUS = isSupabaseConfigured ? "signed_out" : "disabled";
 
+function clearAuthCallbackParams() {
+  const url = new URL(window.location.href);
+  const hash = new URLSearchParams(url.hash.replace(/^#/, ""));
+  const hasAuthParams = url.searchParams.has("code")
+    || url.searchParams.has("error")
+    || hash.has("access_token")
+    || hash.has("refresh_token")
+    || hash.has("error_description");
+
+  if (!hasAuthParams) return;
+  url.searchParams.delete("code");
+  url.searchParams.delete("error");
+  url.searchParams.delete("error_code");
+  url.searchParams.delete("error_description");
+  url.hash = "";
+  window.history.replaceState({}, document.title, `${url.pathname}${url.search}`);
+}
+
 export function useCloudSync({ data, setData, onMessage }) {
   const [session, setSession] = useState(null);
   const [status, setStatus] = useState(INITIAL_STATUS);
@@ -90,11 +108,19 @@ export function useCloudSync({ data, setData, onMessage }) {
     let active = true;
 
     supabase.auth.getSession().then(({ data: result }) => {
-      if (active) setSession(result.session || null);
+      if (active) {
+        setSession(result.session || null);
+        clearAuthCallbackParams();
+      }
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      if (active) setSession(nextSession || null);
+    const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (active) {
+        setSession(nextSession || null);
+        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+          clearAuthCallbackParams();
+        }
+      }
     });
 
     return () => {

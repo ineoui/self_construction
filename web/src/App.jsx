@@ -209,7 +209,7 @@ function CloudSyncModal({ cloud, onClose }) {
             <Mail size={22} />
             <div>
               <strong>用同一个邮箱登录手机和 PC</strong>
-              <span>Supabase 会发送登录链接，不需要单独设置密码。</span>
+              <span>Supabase 会发送登录链接，请在发起登录的同一浏览器中打开。</span>
             </div>
           </div>
           <Field label="邮箱">

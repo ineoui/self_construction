@@ -24,8 +24,12 @@ https://ineoui.github.io/self_construction/
 
 Redirect URLs:
 https://ineoui.github.io/self_construction/
+https://ineoui.github.io/self_construction/**
 http://localhost:5173/self_construction/
+http://localhost:5173/self_construction/**
 ```
+
+如果登录邮件打开后跳到 `localhost:3000`，说明线上地址尚未保存到允许列表，Supabase 回退到了默认 Site URL。修改并保存后重新发送登录邮件，不要继续使用旧链接。
 
 ## 3. 获取前端配置
 
@@ -58,7 +62,7 @@ VITE_SUPABASE_PUBLISHABLE_KEY
 
 1. 打开网页右上角的同步按钮
 2. 输入邮箱并发送登录链接
-3. 在邮箱中打开链接
+3. 在发起登录的同一台设备、同一个浏览器中打开邮件链接
 4. 第一次登录会把当前浏览器的数据上传到 Supabase
 5. 其他设备使用同一邮箱登录后，会优先读取云端数据
 
@@ -67,3 +71,16 @@ VITE_SUPABASE_PUBLISHABLE_KEY
 ## 当前冲突策略
 
 当前版本使用单行 JSONB 和“最后一次写入覆盖”。非常适合一个人使用，但不适合两台设备同时高频编辑。如果后续需要多人协作，会把任务、岗位和回顾拆成独立数据表。
+
+## 登录链接泄露或发错地址
+
+Magic Link 属于登录凭据，不要转发完整链接。链接中如果出现 `access_token` 或 `refresh_token`，应立即在 Authentication Users 页面撤销该用户会话。
+
+如果 Dashboard 没有撤销按钮，可以在 SQL Editor 中使用用户 UUID 删除会话：
+
+```sql
+delete from auth.sessions
+where user_id = '从 Authentication > Users 复制的用户 UUID';
+```
+
+这会撤销 refresh token。已经签发的短期 access token 仍可能持续有效到它自身过期。
